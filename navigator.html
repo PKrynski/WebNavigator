@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="bootstrap.css">
+    <link rel="stylesheet" href="main.css">
+    <script src="//code.jquery.com/jquery-1.11.3.js"></script>
+    <script type="text/javascript" src="script.js"></script>
+    <title>Znajdź drogę</title>
+</head>
+
+<body>
+
+    <div class="jumbotron">
+        <div class="container">
+            <h1>PathFinder</h1>
+        </div>
+    </div>
+
+    <div class="content">
+        <div class="container">
+            <h2>Znajdź trasę</h2>
+
+            <form class="form-horizontal" role="form">
+                <div class="form-group">
+                    <label class="control-label col-sm-4" for="from">Miasto początkowe:</label>
+                    <div class="col-sm-4">
+                        <select class="form-control" id="from">
+                            <option value="WAW">Warszawa</option>
+                            <option value="PNO">Piaseczno</option>
+                            <option value="KRK">Kraków</option>
+                            <option value="GDN">Gdańsk</option>
+                            <option value="POZ">Poznań</option>
+                            <option value="BZG">Bydgoszcz</option>
+                            <option value="SZZ">Szczecin</option>
+                            <option value="KTW">Katowice</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-sm-4" for="to">Miasto docelowe:</label>
+                    <div class="col-sm-4">
+                        <select class="form-control" id="to">
+                            <option value="WAW">Warszawa</option>
+                            <option value="PNO">Piaseczno</option>
+                            <option value="KRK">Kraków</option>
+                            <option value="GDN">Gdańsk</option>
+                            <option value="POZ">Poznań</option>
+                            <option value="BZG">Bydgoszcz</option>
+                            <option value="SZZ">Szczecin</option>
+                            <option value="KTW">Katowice</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-sm-offset-4 col-sm-4">
+                        <button class="btn btn-info" type="button" id="calculate">Wylicz trasę!</button>
+                    </div>
+                </div>
+
+            </form>
+
+
+        </div>
+
+        <div class="container" id="pathcontainer">
+            <h2 class="route" id="route-title">Kieruj się kolejno na:</h2>
+            <ul class="list-group route col-sm-offset-4 col-sm-4" id="path">
+            </ul>
+        </div>
+
+        <div class="container" id="pathmap">
+            <div id="map"></div>
+        </div>
+
+    </div>
+
+    <script async defer
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCyOiPa34ugXO5m2X42UPguzF03YBZilhE&callback=initMap">
+    </script>
+
+</body>
+</html>
+

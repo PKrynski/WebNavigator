@@ -5,6 +5,7 @@ cities['CZE'] = "Częstochowa";
 cities['ELK'] = "Ełk";
 cities['GDN'] = "Gdańsk";
 cities['KTW'] = "Katowice";
+cities['KIE'] = "Kielce";
 cities['KOS'] = "Koszalin";
 cities['KRK'] = "Kraków";
 cities['LUB'] = "Lublin";

@@ -1,12 +1,21 @@
 var cities = {};
-cities['WAW'] = "Warszawa";
-cities['PNO'] = "Piaseczno";
-cities['KRK'] = "Kraków";
-cities['GDN'] = "Gdańsk";
-cities['POZ'] = "Poznań";
+cities['BIA'] = "Białystok";
 cities['BZG'] = "Bydgoszcz";
-cities['SZZ'] = "Szczecin";
+cities['CZE'] = "Częstochowa";
+cities['ELK'] = "Ełk";
+cities['GDN'] = "Gdańsk";
 cities['KTW'] = "Katowice";
+cities['KOS'] = "Koszalin";
+cities['KRK'] = "Kraków";
+cities['LUB'] = "Lublin";
+cities['LCJ'] = "Łódź";
+cities['OLS'] = "Olsztyn";
+cities['OPO'] = "Opole";
+cities['POZ'] = "Poznań";
+cities['RAD'] = "Radom";
+cities['WAW'] = "Warszawa";
+cities['WRO'] = "Wrocław";
+cities['SZZ'] = "Szczecin";
 
 var map;
 var markers = [];

@@ -12,14 +12,18 @@ cities['LUB'] = "Lublin";
 cities['LCJ'] = "Łódź";
 cities['OLS'] = "Olsztyn";
 cities['OPO'] = "Opole";
+cities['PLO'] = "Płock";
 cities['POZ'] = "Poznań";
 cities['RAD'] = "Radom";
+cities['SIE'] = "Sieradz";
+cities['SZZ'] = "Szczecin";
 cities['WAW'] = "Warszawa";
 cities['WRO'] = "Wrocław";
-cities['SZZ'] = "Szczecin";
 
 var map;
 var markers = [];
+var marker_path = [];
+var journeyPath;
 
 function setMapOnAll(map) {
     for (var i = 0; i < markers.length; i++) {
@@ -38,23 +42,23 @@ function deleteMarkers() {
 
 function setMarkers(cityID_list) {
 
-    console.info("SET MARKERS");
+    //console.info("SET MARKERS");
 
-    console.info(cityID_list);
+    //console.info(cityID_list);
 
     var i;
 
     for( i=0; i < cityID_list.length; i++) {
 
         var cityname = cities[ cityID_list [i]];
-        console.info(cityname);
+        //console.info(cityname);
 
         var dest_url = "http://maps.google.com/maps/api/geocode/json?address=" + cityname;
 
         $.ajax( dest_url, {
             success: function(responseText, status, xhr) {
 
-                console.info("GEOCODE:");
+                //console.info("GEOCODE:");
 
                 var coords = responseText.results[0].geometry.location;
                 //console.info(coords);
@@ -62,8 +66,8 @@ function setMarkers(cityID_list) {
                 var c_lat = coords.lat;
                 var c_lng = coords.lng;
 
-                console.info(c_lat);
-                console.info(c_lng);
+                //console.info(c_lat);
+                //console.info(c_lng);
 
                 var marker = new google.maps.Marker({
                     map: map,
@@ -77,6 +81,58 @@ function setMarkers(cityID_list) {
 
     }
 
+}
+
+function addPath() {
+    journeyPath.setMap(map);
+}
+
+function removePath() {
+    journeyPath.setMap(null);
+    marker_path = [];
+}
+
+function animateCircle(line) {
+    var count = 0;
+    window.setInterval(function() {
+        count = (count + 1) % 200;
+
+        var icons = line.get('icons');
+        icons[0].offset = (count / 2) + '%';
+        line.set('icons', icons);
+    }, 20);
+}
+
+function drawPath() {
+
+    //console.info("Draw path.");
+
+    var i;
+
+    for( i = 0; i < markers.length; i++) {
+        marker_path.push(markers[i].position);
+    }
+
+    var lineSymbol = {
+        path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+        scale: 4,
+        strokeColor: 'blue' //'#393'
+    };
+
+    journeyPath = new google.maps.Polyline({
+        path: marker_path,
+        icons: [{
+            icon: lineSymbol,
+            offset: '100%'
+        }],
+        geodesic: false,
+        strokeColor: '#FF0000',
+        strokeOpacity: 0.5,
+        strokeWeight: 5
+    });
+
+    addPath();
+    animateCircle(journeyPath);
 }
 
 function initMap() {
@@ -114,7 +170,7 @@ function main() {
         var routes = "http://pi.zetis.pw/krynskip/web-pathfinder/routes";
         var url = routes + "?from=" + from + "&to=" +to;
 
-        console.info(url);
+        //console.info(url);
 
         $.ajax( url, {
             success: function(responseText, statusText, jqXHR) {
@@ -124,12 +180,16 @@ function main() {
 
                 $.ajax(mylocation, {
                     success: function( response, status, xhr) {
-                        console.info(response);
+                        //console.info(response);
 
                         var cityID_list = JSON.parse(response);
                         console.info(cityID_list);
 
                         deleteMarkers();
+
+                        if( typeof journeyPath !== "undefined" ) {
+                            removePath();
+                        }
 
                         var i;
 
@@ -140,7 +200,7 @@ function main() {
                         for( i=0; i < cityID_list.length; i++) {
 
                             var cityname = cities[ cityID_list [i]];
-                            console.info(cityname);
+                            //console.info(cityname);
                             $('<li>').text(cityname).addClass("list-group-item route-item").appendTo('#path');
                         }
 
@@ -149,14 +209,22 @@ function main() {
                         $('.route-item').hide();
 
                         var doneTimeout;
+                        var drawTimeout
 
                         $("li").each(function(index) {
                             $(this).delay(400*index).show(300);
 
                             clearTimeout(doneTimeout);
+                            clearTimeout(drawTimeout);
+
                             doneTimeout = setTimeout( function() {
                                 setMarkers(cityID_list);
                             }, 400*index+400);
+
+                            drawTimeout = setTimeout( function() {
+                                drawPath();
+                            }, 400*index+1050);
+
                         });
 
                     }

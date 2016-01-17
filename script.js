@@ -21,12 +21,13 @@ cities['WAW'] = "Warszawa";
 cities['WRO'] = "Wrocław";
 
 var map;
+var geocode_url = "http://maps.google.com/maps/api/geocode/json?address=";
 var markers = [];
 var marker_path = [];
 var journeyPath;
 
-function setMapOnAll(map) {
-    for (var i = 0; i < markers.length; i++) {
+function setMapOnAll( map ) {
+    for( var i = 0; i < markers.length; i++ ) {
         markers[i].setMap(map);
     }
 }
@@ -40,7 +41,35 @@ function deleteMarkers() {
     markers = [];
 }
 
-function setMarkers(cityID_list) {
+function getMarkers( cityID_list ) {
+
+    var i;
+
+    for( i = 0; i < cityID_list.length; i++ ) {
+
+        var cityname = cities[cityID_list [i]];
+
+        var dest_url = geocode_url + cityname;
+
+        $.ajax(dest_url, {
+            success: function ( responseText ) {
+
+                var coords = responseText.results[0].geometry.location;
+
+                var marker = new google.maps.Marker({
+                    map: map,
+                    animation: google.maps.Animation.DROP,
+                    position: {lat: coords.lat, lng: coords.lng}
+                });
+                markers.push(marker);
+                deleteMarkers();
+            }
+        });
+    }
+
+}
+
+function setMarkers( cityID_list ) {
 
     //console.info("SET MARKERS");
 
@@ -48,15 +77,15 @@ function setMarkers(cityID_list) {
 
     var i;
 
-    for( i=0; i < cityID_list.length; i++) {
+    for( i = 0; i < cityID_list.length; i++ ) {
 
-        var cityname = cities[ cityID_list [i]];
+        var cityname = cities[cityID_list [i]];
         //console.info(cityname);
 
-        var dest_url = "http://maps.google.com/maps/api/geocode/json?address=" + cityname;
+        var dest_url = geocode_url + cityname;
 
-        $.ajax( dest_url, {
-            success: function(responseText, status, xhr) {
+        $.ajax(dest_url, {
+            success: function ( responseText, status, xhr ) {
 
                 //console.info("GEOCODE:");
 
@@ -92,9 +121,9 @@ function removePath() {
     marker_path = [];
 }
 
-function animateCircle(line) {
+function animateCircle( line ) {
     var count = 0;
-    window.setInterval(function() {
+    window.setInterval(function () {
         count = (count + 1) % 200;
 
         var icons = line.get('icons');
@@ -109,7 +138,7 @@ function drawPath() {
 
     var i;
 
-    for( i = 0; i < markers.length; i++) {
+    for( i = 0; i < markers.length; i++ ) {
         marker_path.push(markers[i].position);
     }
 
@@ -148,12 +177,12 @@ function initMap() {
 
     // Create a marker and set its position.
     /*
-    var marker = new google.maps.Marker({
-        map: map,
-        position: warsaw_coor,
-        title: 'Warsaw'
-    });
-    */
+     var marker = new google.maps.Marker({
+     map: map,
+     position: warsaw_coor,
+     title: 'Warsaw'
+     });
+     */
 
 }
 
@@ -162,24 +191,30 @@ function main() {
     $('.route').hide();
 
 
-    $('#calculate').click( function() {
+    $('#calculate').click(function () {
 
         var from = $('#from').val();
         var to = $('#to').val();
 
-        var routes = "http://pi.zetis.pw/krynskip/web-pathfinder/routes";
-        var url = routes + "?from=" + from + "&to=" +to;
+        var URL = "http://pi.zetis.pw/krynskip/web-pathfinder/routes"; //routes
+        //var url = routes + "?from=" + from + "&to=" +to;
 
-        //console.info(url);
+        console.info(URL);
 
-        $.ajax( url, {
-            success: function(responseText, statusText, jqXHR) {
+        $.post(URL,
+            {
+                from: from,
+                to: to
+            },
+            function ( responseText, statusText, jqXHR ) {
+
+                //console.info("POST SUCCESS");
 
                 var mylocation = jqXHR.getResponseHeader('Location');
-                console.info(mylocation);
+                //console.info(mylocation);
 
                 $.ajax(mylocation, {
-                    success: function( response, status, xhr) {
+                    success: function ( response, status, xhr ) {
                         //console.info(response);
 
                         var cityID_list = JSON.parse(response);
@@ -197,9 +232,9 @@ function main() {
                         $('#path').empty();
                         $('#path').show();
 
-                        for( i=0; i < cityID_list.length; i++) {
+                        for( i = 0; i < cityID_list.length; i++ ) {
 
-                            var cityname = cities[ cityID_list [i]];
+                            var cityname = cities[cityID_list [i]];
                             //console.info(cityname);
                             $('<li>').text(cityname).addClass("list-group-item route-item").appendTo('#path');
                         }
@@ -209,32 +244,30 @@ function main() {
                         $('.route-item').hide();
 
                         var doneTimeout;
-                        var drawTimeout
+                        var drawTimeout;
 
-                        $("li").each(function(index) {
-                            $(this).delay(400*index).show(300);
+                        getMarkers(cityID_list);
+
+                        $("li").each(function ( index ) {
+                            $(this).delay(400 * index).show(300);
 
                             clearTimeout(doneTimeout);
                             clearTimeout(drawTimeout);
 
-                            doneTimeout = setTimeout( function() {
+                            doneTimeout = setTimeout(function () {
                                 setMarkers(cityID_list);
-                            }, 400*index+400);
+                            }, 400 * index + 400);
 
-                            drawTimeout = setTimeout( function() {
+                            drawTimeout = setTimeout(function () {
                                 drawPath();
-                            }, 400*index+1050);
+                            }, 400 * index + 1050);
 
                         });
 
                     }
                 });
-
-            }
-        });
-
+            });
     });
-
 
 
 }

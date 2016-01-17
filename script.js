@@ -26,7 +26,9 @@ var markers = [];
 var marker_path = [];
 var journeyPath;
 
+
 function setMapOnAll( map ) {
+
     for( var i = 0; i < markers.length; i++ ) {
         markers[i].setMap(map);
     }
@@ -72,7 +74,6 @@ function getMarkers( cityID_list ) {
 function setMarkers( cityID_list ) {
 
     //console.info("SET MARKERS");
-
     //console.info(cityID_list);
 
     var i;
@@ -121,7 +122,8 @@ function removePath() {
     marker_path = [];
 }
 
-function animateCircle( line ) {
+function animateIcon( line ) {
+
     var count = 0;
     window.setInterval(function () {
         count = (count + 1) % 200;
@@ -130,6 +132,7 @@ function animateCircle( line ) {
         icons[0].offset = (count / 2) + '%';
         line.set('icons', icons);
     }, 20);
+
 }
 
 function drawPath() {
@@ -161,28 +164,18 @@ function drawPath() {
     });
 
     addPath();
-    animateCircle(journeyPath);
+    animateIcon(journeyPath);
 }
 
 function initMap() {
-    var poland_coor = {lat: 51.91944, lng: 19.14514};
-    //var warsaw_coor = {lat: 52.22968, lng: 21.01223};
 
-    // Create a map object and specify the DOM element for display.
+    var poland_coor = {lat: 51.91944, lng: 19.14514};
+
     map = new google.maps.Map(document.getElementById('map'), {
         center: poland_coor,
         //scrollwheel: false,
         zoom: 7
     });
-
-    // Create a marker and set its position.
-    /*
-     var marker = new google.maps.Marker({
-     map: map,
-     position: warsaw_coor,
-     title: 'Warsaw'
-     });
-     */
 
 }
 
@@ -196,10 +189,7 @@ function main() {
         var from = $('#from').val();
         var to = $('#to').val();
 
-        var URL = "http://pi.zetis.pw/krynskip/web-pathfinder/routes"; //routes
-        //var url = routes + "?from=" + from + "&to=" +to;
-
-        console.info(URL);
+        var URL = "http://pi.zetis.pw/krynskip/web-pathfinder/routes";
 
         $.post(URL,
             {
@@ -214,7 +204,7 @@ function main() {
                 //console.info(mylocation);
 
                 $.ajax(mylocation, {
-                    success: function ( response, status, xhr ) {
+                    success: function ( response ) {
                         //console.info(response);
 
                         var cityID_list = JSON.parse(response);
@@ -265,10 +255,12 @@ function main() {
                         });
 
                     }
-                });
-            });
-    });
 
+                });
+
+            });
+
+    });
 
 }
 

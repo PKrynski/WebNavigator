@@ -43,7 +43,7 @@ function deleteMarkers() {
     markers = [];
 }
 
-function getMarkers( cityID_list ) {
+function getMarkers( cityID_list ) { // Added to handle Geocode API limitations and still get all markers.
 
     var i;
 
@@ -73,15 +73,11 @@ function getMarkers( cityID_list ) {
 
 function setMarkers( cityID_list ) {
 
-    //console.info("SET MARKERS");
-    //console.info(cityID_list);
-
     var i;
 
     for( i = 0; i < cityID_list.length; i++ ) {
 
         var cityname = cities[cityID_list [i]];
-        //console.info(cityname);
 
         var dest_url = geocode_url + cityname;
 
@@ -91,13 +87,9 @@ function setMarkers( cityID_list ) {
                 //console.info("GEOCODE:");
 
                 var coords = responseText.results[0].geometry.location;
-                //console.info(coords);
 
                 var c_lat = coords.lat;
                 var c_lng = coords.lng;
-
-                //console.info(c_lat);
-                //console.info(c_lng);
 
                 var marker = new google.maps.Marker({
                     map: map,
@@ -136,8 +128,6 @@ function animateIcon( line ) {
 }
 
 function drawPath() {
-
-    //console.info("Draw path.");
 
     var i;
 
@@ -198,17 +188,12 @@ function main() {
             },
             function ( responseText, statusText, jqXHR ) {
 
-                //console.info("POST SUCCESS");
-
                 var mylocation = jqXHR.getResponseHeader('Location');
-                //console.info(mylocation);
 
                 $.ajax(mylocation, {
                     success: function ( response ) {
-                        //console.info(response);
 
                         var cityID_list = JSON.parse(response);
-                        console.info(cityID_list);
 
                         deleteMarkers();
 
@@ -225,7 +210,7 @@ function main() {
                         for( i = 0; i < cityID_list.length; i++ ) {
 
                             var cityname = cities[cityID_list [i]];
-                            //console.info(cityname);
+
                             $('<li>').text(cityname).addClass("list-group-item route-item").appendTo('#path');
                         }
 
